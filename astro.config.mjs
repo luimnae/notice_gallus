@@ -10,23 +10,9 @@ export default defineConfig({
     assets: '_assets',
   },
   devToolbar: { enabled: false },
-  // Astro generates per-build sha256 hashes for the inline scripts/styles it
-  // emits and ships them in a <meta> CSP. This keeps a strict policy (no
-  // 'unsafe-inline') while letting Astro inline small bundles. nginx drops its
-  // own CSP header to avoid a conflicting (intersecting) second policy.
-  experimental: {
-    csp: {
-      directives: [
-        "default-src 'self'",
-        "img-src 'self' data:",
-        "font-src 'self'",
-        "connect-src 'self'",
-        "base-uri 'self'",
-        "form-action 'self'",
-        "object-src 'none'",
-        // frame-ancestors omitted: ignored in a <meta> CSP. Clickjacking is
-        // covered by the X-Frame-Options: SAMEORIGIN header from nginx.
-      ],
-    },
-  },
+  // NOTE: no Astro experimental.csp here. The site sits behind Cloudflare
+  // (luimnae.com), which rewrites inline scripts (Rocket Loader / minify) and
+  // breaks any hash-based CSP — the inline script's sha256 no longer matches.
+  // CSP is therefore served from nginx with 'unsafe-inline' (see
+  // docker/security-headers.conf). Safe here: fully static, no user input/auth.
 });
