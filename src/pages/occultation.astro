@@ -1,0 +1,12 @@
+---
+import Base from '../layouts/Base.astro';
+import Notice from '../components/Notice.astro';
+import { site } from '../data/site';
+const doc = site.occultation;
+---
+<Base title={doc.title} description={`${doc.title} — ${doc.subtitle}`} active="occultation">
+  <Notice doc={doc} />
+</Base>
+<script>
+  import '../scripts/notice.ts';
+</script>

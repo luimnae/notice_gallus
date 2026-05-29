@@ -1,0 +1,24 @@
+---
+interface Props {
+  head: string[];
+  rows: string[][];
+  accentLast?: boolean;
+}
+const { head, rows, accentLast = false } = Astro.props;
+---
+<div class="dtable-wrap">
+  <table class="dtable">
+    <thead>
+      <tr>{head.map((h) => <th scope="col">{h}</th>)}</tr>
+    </thead>
+    <tbody>
+      {rows.map((r) => (
+        <tr>
+          {r.map((c, j) => (
+            <td class={j === r.length - 1 && accentLast ? 'dtable__amp' : ''}>{c}</td>
+          ))}
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>

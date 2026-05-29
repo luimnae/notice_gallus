@@ -1,0 +1,49 @@
+---
+import '../styles/global.css';
+import '../styles/app.css';
+import DocNav from '../components/DocNav.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  active?: string;
+}
+const { title, description, active } = Astro.props;
+const siteName = 'Gallus Menuiseries';
+const baseDesc =
+  description ??
+  'Notices techniques Gallus — pose de la menuiserie extérieure, occultations et réglages. Référence chantier, étape par étape.';
+const fullTitle = title ? `${title} · ${siteName}` : `${siteName} — Notices techniques`;
+---
+
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{fullTitle}</title>
+    <meta name="description" content={baseDesc} />
+    <meta name="theme-color" content="#0e0e0f" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={baseDesc} />
+    <meta property="og:locale" content="fr_FR" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <a href="#main" class="skip">Aller au contenu</a>
+
+    <div class="atmos" aria-hidden="true">
+      <div class="atmos__grad"></div>
+      <div class="atmos__grid"></div>
+      <div class="atmos__noise"></div>
+    </div>
+
+    <main id="main" class="shell">
+      <slot />
+    </main>
+
+    {active && <DocNav active={active} />}
+  </body>
+</html>

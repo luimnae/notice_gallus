@@ -1,0 +1,210 @@
+/* =====================================================================
+   GALLUS · NOTICES TECHNIQUES
+   Monochromatic dark glassmorphism over the Gallus token system.
+   Noir Sidéral base · frosted Sable panels · singular Bronze accent.
+   (Adapted from the Claude Design "Notices Gallus" handoff.)
+   ===================================================================== */
+
+/* ---------- Brand fonts (curated subset, self-hosted) ---------- */
+@font-face{font-family:'Ivy Presto Display';src:url('/fonts/IvyPrestoDisplay-Thin.otf') format('opentype');font-weight:100;font-style:normal;font-display:swap;}
+@font-face{font-family:'Ivy Presto Display';src:url('/fonts/IvyPrestoDisplay-Light.otf') format('opentype');font-weight:300;font-style:normal;font-display:swap;}
+@font-face{font-family:'Ivy Presto Display';src:url('/fonts/IvyPrestoDisplay-LightItalic.otf') format('opentype');font-weight:300;font-style:italic;font-display:swap;}
+@font-face{font-family:'Ivy Presto Display';src:url('/fonts/IvyPrestoDisplay-Regular.otf') format('opentype');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Ivy Presto Display';src:url('/fonts/IvyPrestoDisplay-Italic.otf') format('opentype');font-weight:400;font-style:italic;font-display:swap;}
+@font-face{font-family:'Ivy Presto Display';src:url('/fonts/IvyPrestoDisplay-SemiBold.otf') format('opentype');font-weight:600;font-style:normal;font-display:swap;}
+
+@font-face{font-family:'Futura LXT';src:url('/fonts/Futura100LXT-Light.otf') format('opentype');font-weight:300;font-style:normal;font-display:swap;}
+@font-face{font-family:'Futura LXT';src:url('/fonts/Futura100LXT-Book.otf') format('opentype');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Futura LXT';src:url('/fonts/Futura100LXT-Medium.otf') format('opentype');font-weight:500;font-style:normal;font-display:swap;}
+@font-face{font-family:'Futura LXT';src:url('/fonts/Futura100LXT-Demibold.otf') format('opentype');font-weight:600;font-style:normal;font-display:swap;}
+
+:root{
+  /* Palette — Gallus ADN chromatique */
+  --noir-sideral:#1A1A1B;
+  --noir-deep:#0E0E0F;
+  --gris-fume:#2B2B2C;
+  --gris-mineral:#8E8E8E;
+  --gris-clair:#C9C9C7;
+  --sable-quartz:#F5F5F2;
+  --bronze-epure:#A69279;
+  --bronze-light:#C4B49A;
+  --bronze-deep:#8A795F;
+
+  --font-serif:'Ivy Presto Display','Cormorant Garamond',Georgia,serif;
+  --font-sans:'Futura LXT','Jost','Century Gothic',system-ui,sans-serif;
+
+  /* Dark glass theme tokens (direction: AURORE) */
+  --bg-0:#0E0E0F;
+  --bg-1:#161618;
+  --ink:#F2F1ED;
+  --ink-2:#B7B7B3;
+  --ink-3:#7E7E7C;
+  --accent:#C4B49A;
+  --accent-deep:#A69279;
+  --accent-ink:#1A1A1B;
+
+  --glass-bg:rgba(245,245,242,0.055);
+  --glass-bg-2:rgba(245,245,242,0.085);
+  --glass-border:rgba(245,245,242,0.14);
+  --glass-border-strong:rgba(245,245,242,0.26);
+  --glass-blur:22px;
+  --glass-sat:1.1;
+  --glass-shadow:0 24px 60px -28px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.06);
+  --glass-radius:20px;
+
+  --ls-tracked:0.26em;
+  --ls-wide:0.1em;
+
+  --ease:cubic-bezier(0.16,1,0.3,1);
+  --dur:.5s;
+  --app-font-scale:1;
+}
+
+/* ============================ RESET ============================ */
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{
+  background:var(--bg-0);
+  color:var(--ink);
+  font-family:var(--font-sans);
+  font-weight:400;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  overflow-x:hidden;
+}
+::selection{background:var(--accent);color:var(--accent-ink);}
+a{color:inherit;text-decoration:none;}
+button{font-family:inherit;color:inherit;background:none;border:none;cursor:pointer;}
+img{display:block;max-width:100%;}
+
+/* ============================ ATMOSPHERE ============================ */
+.atmos{position:fixed;inset:0;z-index:-2;background:var(--bg-0);overflow:hidden;}
+.atmos__grad{
+  position:absolute;inset:-20%;
+  background:
+    radial-gradient(60% 55% at 72% 18%, rgba(196,180,154,0.16), transparent 60%),
+    radial-gradient(50% 50% at 18% 88%, rgba(142,142,142,0.12), transparent 62%),
+    radial-gradient(80% 70% at 50% 50%, rgba(245,245,242,0.04), transparent 70%);
+  filter:saturate(1.1);
+}
+.atmos__grid{
+  position:absolute;inset:0;opacity:.5;
+  background-image:
+    linear-gradient(rgba(245,245,242,0.030) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245,245,242,0.030) 1px, transparent 1px);
+  background-size:64px 64px;
+  -webkit-mask-image:radial-gradient(120% 100% at 50% 0%, #000 30%, transparent 92%);
+          mask-image:radial-gradient(120% 100% at 50% 0%, #000 30%, transparent 92%);
+}
+body.no-grid .atmos__grid{display:none;}
+.atmos__noise{
+  position:absolute;inset:0;opacity:.5;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+}
+
+/* ============================ GLASS ============================ */
+.glass{
+  position:relative;
+  background:var(--glass-bg);
+  -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-sat));
+          backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-sat));
+  border:1px solid var(--glass-border);
+  border-radius:var(--glass-radius);
+  box-shadow:var(--glass-shadow);
+}
+.glass::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(180deg, rgba(255,255,255,0.07), transparent 30%);
+  opacity:.9;
+}
+.glass--2{background:var(--glass-bg-2);}
+
+/* ============================ TYPE HELPERS ============================ */
+.eyebrow{
+  font-family:var(--font-sans);font-weight:400;
+  font-size:11px;letter-spacing:var(--ls-tracked);text-transform:uppercase;
+  color:var(--ink-3);
+}
+.serif{font-family:var(--font-serif);font-weight:400;}
+.tnum{font-variant-numeric:tabular-nums;}
+.hairline{height:1px;background:var(--glass-border);border:0;width:100%;}
+.accent{color:var(--accent);}
+
+/* skip link */
+.skip{position:absolute;left:1rem;top:-3rem;z-index:100;padding:.6rem 1rem;
+  background:var(--accent);color:var(--accent-ink);border-radius:8px;font-size:13px;
+  transition:top var(--dur) var(--ease);}
+.skip:focus{top:1rem;}
+
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:6px;}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation:none !important;transition:none !important;scroll-behavior:auto !important;}
+}
+
+/* Fallback when backdrop-filter unsupported */
+@supports not ((-webkit-backdrop-filter:blur(2px)) or (backdrop-filter:blur(2px))){
+  .glass{background:rgba(30,30,32,0.92);}
+  .glass--2{background:rgba(38,38,40,0.94);}
+}
+
+/* ============================ PROGRESS (native <progress>, CSP-safe) ============================ */
+progress.prog__bar{
+  -webkit-appearance:none;appearance:none;display:block;width:100%;height:3px;
+  border:0;border-radius:999px;background:var(--glass-border);overflow:hidden;
+}
+progress.prog__bar::-webkit-progress-bar{background:transparent;}
+progress.prog__bar::-webkit-progress-value{background:var(--accent);border-radius:999px;transition:width .45s var(--ease);}
+progress.prog__bar::-moz-progress-bar{background:var(--accent);}
+/* step card divider spacing (replaces an inline style) */
+.stepcard .hairline{margin:18px 0 22px;}
+
+/* ============================ METHOD HERO + SCHEMAS ============================ */
+.mhero{overflow:hidden;padding:0;}
+.mhero img{display:block;width:100%;}
+/* product photos — toned to the monochrome palette, warm to full colour on hover */
+.mhero--photo img{
+  height:clamp(200px,30vw,360px);object-fit:cover;
+  filter:saturate(.6) contrast(1.03) brightness(.94);
+  transition:filter var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.mhero--photo:hover img{filter:saturate(1) contrast(1) brightness(1);transform:scale(1.02);}
+/* technical cross-sections — light sable plate, full colour (orange compribande matters) */
+.mhero--diagram{background:var(--sable-quartz);}
+.mhero--diagram img{max-height:380px;object-fit:contain;padding:clamp(14px,2.5vw,28px);margin:0 auto;}
+
+/* per-step diagrams (sable plate, full colour to keep the orange compribande cue) */
+.stepfigs{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:2px;}
+.stepfigs--one{grid-template-columns:minmax(0,360px);}
+.stepfig{background:var(--sable-quartz);padding:12px;overflow:hidden;
+  transition:transform var(--dur) var(--ease),border-color var(--dur) var(--ease);}
+.stepfig:hover{transform:translateY(-4px);border-color:var(--glass-border-strong);}
+.stepfig img{width:100%;height:148px;object-fit:contain;}
+.stepfigs--one .stepfig img{height:auto;max-height:300px;}
+
+/* ============================ NAVIGATOR STATE TOGGLES ============================ */
+/* chip completion tick — only when method fully checked off.
+   Higher specificity than app.css's base .chip__done{display:inline-flex}. */
+.chip .chip__done{display:none;}
+.chip.is-complete .chip__done{display:inline-flex;}
+/* step rail done glyph */
+.rail__check{display:none;}
+.rail__item.is-done .rail__num .rail__n{display:none;}
+.rail__item.is-done .rail__num .rail__check{display:inline-flex;}
+/* check-off button glyph */
+.btn--check .btn__check-glyph{opacity:0;transition:opacity var(--dur) var(--ease);}
+.btn--check.is-done .btn__check-glyph{opacity:1;}
+
+/* scrollbar */
+*::-webkit-scrollbar{width:10px;height:10px;}
+*::-webkit-scrollbar-thumb{background:rgba(245,245,242,0.14);border-radius:99px;border:3px solid transparent;background-clip:padding-box;}
+*::-webkit-scrollbar-track{background:transparent;}
+
+/* print */
+@media print{
+  .atmos,.docnav,.skip,.stepcard__foot,.prog__reset{display:none !important;}
+  body{background:#fff;color:#000;}
+  .glass,.glass--2{background:#fff;border-color:#ccc;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;}
+  .step-card[hidden]{display:block !important;}
+  .mbody[hidden]{display:flex !important;}
+}

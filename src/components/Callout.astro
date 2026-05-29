@@ -1,0 +1,16 @@
+---
+import Icon from './Icon.astro';
+interface Props {
+  kind?: 'warn' | 'info';
+  text: string;
+}
+const { kind = 'warn', text } = Astro.props;
+const isWarn = kind === 'warn';
+---
+<div class={`callout ${isWarn ? 'callout--warn' : 'callout--info'}`}>
+  <span class="callout__icn"><Icon name={isWarn ? 'alert' : 'info'} size={18} sw={1.4} /></span>
+  <div class="callout__body">
+    <span class="callout__label">{isWarn ? 'Attention' : 'À noter'}</span>
+    <p>{text}</p>
+  </div>
+</div>

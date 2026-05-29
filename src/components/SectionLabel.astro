@@ -1,0 +1,13 @@
+---
+import Icon from './Icon.astro';
+interface Props {
+  icon?: string;
+  text: string;
+}
+const { icon, text } = Astro.props;
+---
+<div class="seclabel">
+  {icon && <span class="seclabel__icn"><Icon name={icon} size={15} sw={1.4} /></span>}
+  <span class="eyebrow">{text}</span>
+  <span class="seclabel__rule"></span>
+</div>

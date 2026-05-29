@@ -1,0 +1,31 @@
+---
+import SectionLabel from './SectionLabel.astro';
+import type { Tools } from '../data/site';
+interface Props {
+  tools?: Tools;
+  line?: string;
+}
+const { tools, line } = Astro.props;
+---
+{line ? (
+  <div class="glass glass--2 tools tools--line">
+    <SectionLabel icon="tool" text="Outillage" />
+    <p class="tools__line">{line}</p>
+  </div>
+) : tools ? (
+  <div class="glass glass--2 tools">
+    <div class="tools__col">
+      <SectionLabel icon="tool" text="Outillage" />
+      <ul class="tools__list">
+        {tools.outillage.map((t) => <li>{t}</li>)}
+      </ul>
+    </div>
+    <div class="tools__sep"></div>
+    <div class="tools__col">
+      <SectionLabel icon="layers" text="Fournitures" />
+      <ul class="tools__list">
+        {tools.fournitures.map((t) => <li>{t}</li>)}
+      </ul>
+    </div>
+  </div>
+) : null}

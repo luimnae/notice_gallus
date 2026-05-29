@@ -1,0 +1,40 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import { site, docOrder } from '../data/site';
+---
+<Base title="Page introuvable">
+  <section class="nf">
+    <span class="eyebrow">Erreur 404</span>
+    <h1 class="nf__code serif tnum">404</h1>
+    <h2 class="nf__title serif">Cette page n'existe pas.</h2>
+    <p class="nf__lead">Le document recherché a été déplacé ou n'a jamais existé. Reprenons depuis le sommaire.</p>
+    <nav class="nf__links" aria-label="Notices">
+      <a class="chip" href="/"><Icon name="home" size={14} /> <span class="chip__tag">Sommaire</span></a>
+      {docOrder.map((slug) => (
+        <a class="chip" href={`/${slug}/`}><span class="chip__tag">{site[slug].title}</span></a>
+      ))}
+    </nav>
+  </section>
+</Base>
+
+<style>
+  .nf {
+    min-height: 68vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-block: clamp(3rem, 10vw, 7rem);
+  }
+  .nf__code {
+    font-size: clamp(5rem, 18vw, 12rem);
+    line-height: 0.9;
+    font-weight: 300;
+    color: var(--accent);
+    margin: 0.4rem 0 1rem;
+    letter-spacing: -0.03em;
+  }
+  .nf__title { font-size: clamp(1.6rem, 4vw, 2.6rem); font-weight: 300; }
+  .nf__lead { margin-top: 1rem; max-width: 52ch; color: var(--ink-2); font-size: 1.05rem; line-height: 1.6; }
+  .nf__links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 2rem; }
+</style>

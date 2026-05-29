@@ -1,0 +1,256 @@
+---
+import type { Doc } from '../data/site';
+import Icon from './Icon.astro';
+import Callout from './Callout.astro';
+import SectionLabel from './SectionLabel.astro';
+import ToolsPanel from './ToolsPanel.astro';
+import DataTable from './DataTable.astro';
+
+interface Props {
+  doc: Doc;
+}
+const { doc } = Astro.props;
+
+// Group methods (réglage uses group labels; pose/occultation share one implicit group)
+const grouped = new Map<string, { m: (typeof doc.methods)[number]; i: number }[]>();
+doc.methods.forEach((m, i) => {
+  const g = m.group ?? '_';
+  if (!grouped.has(g)) grouped.set(g, []);
+  grouped.get(g)!.push({ m, i });
+});
+
+const pad = (n: number) => String(n).padStart(2, '0');
+---
+
+<section class="notice" data-notice={doc.slug} data-default-method={doc.methods[0].id}>
+  {/* page header */}
+  <header class="phead">
+    <a class="crumb" href="/"><Icon name="home" size={15} /> Sommaire</a>
+    <div class="phead__row">
+      <span class="phead__num serif">{doc.num}</span>
+      <div>
+        <span class="eyebrow">{doc.kicker}</span>
+        <h1 class="phead__title serif">{doc.title}</h1>
+      </div>
+    </div>
+    <p class="phead__lead">{doc.lead}</p>
+    {doc.globalWarnings && (
+      <div class="phead__warns">
+        {doc.globalWarnings.map((w) => <Callout kind="warn" text={w} />)}
+      </div>
+    )}
+  </header>
+
+  {/* diagnostics */}
+  {doc.diagnostics && (
+    <section class="diag">
+      <SectionLabel icon="target" text="Diagnostic rapide" />
+      <div class="diag__grid">
+        {doc.diagnostics.map((d) => (
+          <div class="glass diag__card">
+            <h2 class="diag__title">{d.title}</h2>
+            <DataTable head={d.head} rows={d.rows} accentLast={d.head.length === 3 && d.head[2].includes('Amplitude')} />
+          </div>
+        ))}
+      </div>
+    </section>
+  )}
+
+  {/* method selector */}
+  <div class="mselect">
+    <SectionLabel icon="list" text={doc.selectorLabel} />
+    <div class="mselect__groups">
+      {[...grouped.entries()].map(([g, entries]) => (
+        <div class="mselect__group">
+          {g !== '_' && <span class="mselect__glabel eyebrow">{g}</span>}
+          <div class="chips">
+            {entries.map(({ m }) => (
+              <button class="chip" type="button" data-method={m.id}>
+                <span class="chip__tag">{m.tag}</span>
+                <span class="chip__done"><Icon name="check" size={11} sw={2.2} /></span>
+              </button>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  {/* method bodies (all rendered; JS shows the active one) */}
+  {doc.methods.map((m) => {
+    const total = m.steps.length;
+    return (
+      <section class="mbody" data-method-body={m.id}>
+        {/* header */}
+        <div class="mhead">
+          <div class="mhead__main">
+            <h2 class="mhead__title serif">{m.title}</h2>
+            <p class="mhead__sub">{m.subtitle}</p>
+            {m.intro && <p class="mhead__intro">{m.intro}</p>}
+            {m.diffNote && <Callout kind="info" text={m.diffNote} />}
+          </div>
+          {m.amplitude && (
+            <div class="amp glass glass--2">
+              <span class="eyebrow">Amplitude</span>
+              <span class="amp__val tnum">{m.amplitude}</span>
+            </div>
+          )}
+        </div>
+
+        {/* method hero illustration (product photo or technical cross-section) */}
+        {m.hero && (
+          <figure class={`mhero glass mhero--${m.heroKind ?? 'photo'}`}>
+            <img src={m.hero} alt={m.title} loading="lazy" decoding="async" />
+          </figure>
+        )}
+
+        {/* réglage detail (image + problem/objective/tool) */}
+        {(m.image || m.problem) && (
+          <div class="rdetail">
+            {m.image && (
+              <figure class="glass glass--2 rdetail__fig">
+                <img src={m.image} alt={m.title} loading="lazy" decoding="async" width="300" height="300" />
+                <figcaption class="eyebrow">Schéma de réglage</figcaption>
+              </figure>
+            )}
+            <div class="rdetail__txt">
+              {m.problem && (
+                <div class="rblock">
+                  <span class="eyebrow">Problème</span>
+                  <p>{m.problem}</p>
+                </div>
+              )}
+              {m.objective && (
+                <div class="rblock rblock--obj">
+                  <span class="eyebrow accent">Objectif</span>
+                  <p>{m.objective}</p>
+                </div>
+              )}
+              {m.toolsLine && (
+                <div class="rblock rblock--tool">
+                  <span class="seclabel__icn"><Icon name="tool" size={14} /></span>
+                  <p>{m.toolsLine}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* tools */}
+        {m.tools && <ToolsPanel tools={m.tools} />}
+        {m.toolsLine && !m.problem && !m.image && <ToolsPanel line={m.toolsLine} />}
+
+
+        {/* progress */}
+        <div class="prog">
+          <progress class="prog__bar" data-prog value="0" max={total} aria-label="Progression des étapes"></progress>
+          <div class="prog__meta">
+            <span class="tnum" data-prog-count>{`0 / ${pad(total)} étapes`}</span>
+            <button class="prog__reset" type="button" data-reset hidden>Réinitialiser</button>
+          </div>
+        </div>
+
+        {/* navigator */}
+        <div class={`navwrap${total <= 1 ? ' navwrap--single' : ''}`}>
+          {total > 1 && (
+            <nav class="rail" aria-label="Étapes" data-rail>
+              {m.steps.map((s, i) => (
+                <button class="rail__item" type="button" data-step={i}>
+                  <span class="rail__num">
+                    <span class="rail__n tnum">{pad(i + 1)}</span>
+                    <span class="rail__check"><Icon name="check" size={14} sw={1.8} /></span>
+                  </span>
+                  <span class="rail__txt">{s.title}</span>
+                  <span class="rail__line" aria-hidden="true"></span>
+                </button>
+              ))}
+            </nav>
+          )}
+
+          <div data-cards>
+            {m.steps.map((s, i) => (
+              <article class="glass stepcard" data-card={i}>
+                <div class="stepcard__top">
+                  <div class="stepcard__id">
+                    <span class="stepcard__no tnum serif">{pad(i + 1)}</span>
+                    <span class="stepcard__of tnum">/ {pad(total)}</span>
+                  </div>
+                  {s.badge && <span class="pill pill--ghost">{s.badge}</span>}
+                </div>
+                <h3 class="stepcard__title serif">{s.title}</h3>
+                <hr class="hairline" />
+
+                <ol class="items">
+                  {s.items.map((it) => (
+                    <li class="item">
+                      <span class="item__mark"><Icon name="dot" size={9} /></span>
+                      <div class="item__body">
+                        <p class="item__text">{it.text}</p>
+                        {it.sub && (
+                          <ul class="subitems">
+                            {it.sub.map((su) => <li>{su}</li>)}
+                          </ul>
+                        )}
+                      </div>
+                    </li>
+                  ))}
+                </ol>
+
+                {s.images && s.images.length > 0 && (
+                  <div class={`stepfigs${s.images.length === 1 ? ' stepfigs--one' : ''}`}>
+                    {s.images.map((src) => (
+                      <figure class="stepfig glass glass--2">
+                        <img src={src} alt={`${s.title} — schéma`} loading="lazy" decoding="async" />
+                      </figure>
+                    ))}
+                  </div>
+                )}
+
+                {s.notes?.map((n) => <Callout kind="info" text={n} />)}
+                {s.warnings?.map((w) => <Callout kind="warn" text={w} />)}
+
+                <div class="stepcard__foot">
+                  <button class="btn btn--ghost" type="button" data-prev>
+                    <Icon name="arrowLeft" size={16} /> Précédent
+                  </button>
+                  <button class="btn btn--check" type="button" data-check>
+                    <span class="btn__box"><span class="btn__check-glyph"><Icon name="check" size={13} sw={2} /></span></span>
+                    <span class="btn__check-label">Marquer terminée</span>
+                  </button>
+                  <button class="btn btn--solid" type="button" data-next>
+                    Suivant <Icon name="arrowRight" size={16} />
+                  </button>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  })}
+
+  {/* sequence (réglage) */}
+  {doc.sequence && (
+    <section class="extra">
+      <SectionLabel icon="list" text={doc.sequence.title} />
+      <p class="extra__note">{doc.sequence.note}</p>
+      <div class="glass extra__card">
+        <DataTable head={doc.sequence.head} rows={doc.sequence.rows} />
+      </div>
+      <Callout kind="warn" text={doc.sequence.warning} />
+    </section>
+  )}
+
+  {/* escalation (réglage) */}
+  {doc.escalation && (
+    <section class="extra">
+      <SectionLabel icon="alert" text={doc.escalation.title} />
+      <p class="extra__note">{doc.escalation.intro}</p>
+      <ul class="esc">
+        {doc.escalation.items.map((it, i) => (
+          <li><span class="esc__mark tnum">{i + 1}</span><p>{it}</p></li>
+        ))}
+      </ul>
+    </section>
+  )}
+</section>

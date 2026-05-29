@@ -1,0 +1,11 @@
+node_modules
+dist
+.astro
+.git
+.gitignore
+*.log
+README.md
+DEPLOY.md
+gallus-guide.tar.gz
+src/data/_source_text.txt
+.DS_Store

@@ -1,0 +1,19 @@
+# Portable single-service deploy. Host port via GUIDE_PORT (default 8080).
+#   GUIDE_PORT=80 docker compose up -d   # bind directly
+#   docker compose up -d                  # → http://localhost:8080
+services:
+  guide:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: gallus-guide:latest
+    container_name: gallus-guide
+    ports:
+      - "${GUIDE_PORT:-8080}:80"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s

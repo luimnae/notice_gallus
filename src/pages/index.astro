@@ -1,0 +1,52 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import { site, docOrder } from '../data/site';
+
+const icons: Record<string, string> = { pose: 'window', occultation: 'shutter', reglage: 'wrench' };
+---
+
+<Base>
+  <div class="hub">
+    <header class="hub__head">
+      <div class="hub__hero">
+        <span class="eyebrow">Notices techniques · Poseurs</span>
+        <h1 class="hub__title serif">Le geste juste,<br /><em>du dormant au réglage.</em></h1>
+        <p class="hub__lead">
+          Trois notices de référence pour la pose et le réglage de la menuiserie extérieure.
+          Conçues pour le chantier — étape par étape, tolérances et points de vigilance compris.
+        </p>
+      </div>
+    </header>
+
+    <div class="hub__grid">
+      {docOrder.map((slug) => {
+        const d = site[slug];
+        return (
+          <a class="glass hubcard" href={`/${slug}/`}>
+            <div class="hubcard__top">
+              <span class="hubcard__num serif">{d.num}</span>
+              <span class="hubcard__icn"><Icon name={icons[slug]} size={26} sw={1.2} /></span>
+            </div>
+            <div class="hubcard__mid">
+              <span class="eyebrow">{d.kicker}</span>
+              <h2 class="hubcard__title serif">{d.title}</h2>
+              <p class="hubcard__sub">{d.subtitle}</p>
+            </div>
+            <div class="hubcard__foot">
+              <span class="hubcard__count tnum">{d.methods.length} procédures</span>
+              <span class="hubcard__go">Ouvrir <Icon name="arrowRight" size={16} /></span>
+            </div>
+          </a>
+        );
+      })}
+    </div>
+
+    <footer class="hub__foot">
+      <span class="eyebrow">L'art de dompter la lumière</span>
+      <span class="hub__footnote">
+        Référence chantier — à effectuer après contrôle des tolérances de pose (±1 mm/m).
+      </span>
+    </footer>
+  </div>
+</Base>
